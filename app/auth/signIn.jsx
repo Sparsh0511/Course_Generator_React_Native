@@ -1,10 +1,26 @@
 
-import { Image, View, Text, StyleSheet, TextInput, TouchableOpacity, Pressable } from 'react-native'
-import React from 'react'
+import { Image, View, Text, StyleSheet, TextInput, TouchableOpacity, Pressable, ToastAndroid } from 'react-native'
+import React, { useState } from 'react'
 import Colors from './../../constant/Colors'
 import { router } from 'expo-router'
+import { signInWithEmailAndPassword } from 'firebase/auth';
+import { auth } from '../../config/firebaseConfig';
 
 export default function signIn() {
+
+    const [email, setEmail] = useState();
+    const [password, setpassword] = useState();
+
+    const onSignInClick = () => {
+        signInWithEmailAndPassword(auth, email, password)
+        .then(resp=> {
+            const user = resp.user
+            console.log(user)
+        }).catch(e=> {
+            console.log(e)
+            ToastAndroid.show('Incorrect email and password', ToastAndroid.BOTTOM)
+        })
+    }
     return (
         <View
             style={{
@@ -28,18 +44,19 @@ export default function signIn() {
 
             <Text style={{fontFamily: 'jose_bold', fontSize: 30}} >Welcome Back</Text>
 
-            <TextInput style={style.textInput} placeholder='Email' />
-            <TextInput style={style.textInput} secureTextEntry={true} placeholder='Password' />
+            <TextInput style={style.textInput} placeholder='Email' onChangeText={(value)=> {setEmail(value)}} />
+            <TextInput style={style.textInput} secureTextEntry={true} placeholder='Password' onChangeText={(value)=> {setpassword(value)}}/>
 
 
 
-            <TouchableOpacity style={{
+            <TouchableOpacity
+            onPress={onSignInClick}
+             style={{
                 backgroundColor: Colors.PRIMARY,
                 padding: 16,
                 marginTop: 28,
                 borderRadius: 18,
-                width: '80%',
-            
+                width: '80%'
             }}>
                 <Text style={{color: Colors.WHITE, textAlign: 'center', fontFamily: 'jose_medium', fontSize: 18}} >Login</Text>
             </TouchableOpacity>
